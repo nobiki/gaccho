@@ -150,8 +150,10 @@ class Gaccho:
                     # message = item[ARTICLE_BODY]
                     # message = message.replace('\n',' ')
                     # message = message.replace('\r',' ')
-
-                    message = item[ARTICLE_TITLE]
+                    if item[ARTICLE_TITLE] != "":
+                        message = item[ARTICLE_TITLE]
+                    else:
+                        message = item[ARTICLE_BODY]
                     message = message.split("\n")
                     message = message[0]
 
@@ -204,13 +206,14 @@ class Gaccho:
 
         # title
         height_title = height_timestamp + 1
-        article_title = self.carriage(article[ARTICLE_TITLE], self.detail_x-EDGE_WIDTH-3)
-        for line in article_title:
-            if height_title > 1:
-                self.subscr.addstr(EDGE_TOP+height_title,EDGE_LEFT,article_title[line])
-            else:
-                self.subscr.addstr(EDGE_TOP+height_title,EDGE_LEFT,self.truncate(article_title[line], self.detail_x-EDGE_WIDTH-8-EDGE_WIDTH-EDGE_RIGHT))
-            height_title += 1
+        if article[ARTICLE_TITLE] != "":
+            article_title = self.carriage(article[ARTICLE_TITLE], self.detail_x-EDGE_WIDTH-3)
+            for line in article_title:
+                if height_title > 1:
+                    self.subscr.addstr(EDGE_TOP+height_title,EDGE_LEFT,article_title[line])
+                else:
+                    self.subscr.addstr(EDGE_TOP+height_title,EDGE_LEFT,self.truncate(article_title[line], self.detail_x-EDGE_WIDTH-8-EDGE_WIDTH-EDGE_RIGHT))
+                height_title += 1
 
         # url
         height_url   = height_title
