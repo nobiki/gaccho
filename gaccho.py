@@ -187,6 +187,7 @@ class Gaccho:
         self.focus = "detail"
 
         self.subscr = curses.newwin(self.main_y-4, self.main_x-4, 2, 2)
+        self.setup(self.subscr)
         self.subscr.box()
         self.detail_y, self.detail_x = self.subscr.getmaxyx()
 
