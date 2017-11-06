@@ -268,8 +268,17 @@ class Gaccho:
 
         ## resize window
         elif key == curses.KEY_RESIZE:
-            win.clear()
-            self.setup(win)
+            if win == self.mainscr:
+                win.clear()
+                self.setup(win)
+            elif win == self.subscr:
+                self.main_y, self.main_x = self.mainscr.getmaxyx()
+                win.clear()
+                win.refresh()
+                self.setup(win)
+
+                self.detail(self.timeline[self.position])
+                return False
 
         ## up, k
         elif key == curses.KEY_UP or key == ord("k"):
