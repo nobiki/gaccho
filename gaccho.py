@@ -31,12 +31,10 @@ ARTICLE_URL         = 4
 ARTICLE_BODY        = 5
 
 class Gaccho:
-    """ main class """
-
     focus       = ""
 
     plugins     = []
-    timeline    = []
+    tl          = []
     color       = {}
 
     key_repeat  = 0
@@ -47,6 +45,7 @@ class Gaccho:
         ## curses initialize
         curses.noecho()
         curses.cbreak()
+        curses.start_color()
         curses.curs_set(0)
 
         ## window initialize
@@ -67,71 +66,37 @@ class Gaccho:
                 Klass = getattr(module, ClassName)
                 self.plugins.append(Klass())
 
-        ## plugins loop
-        curses.start_color()
-        i=0
-        for p in self.plugins:
-            # get color setting
-            i = i + 1
-            category = p.__class__.__name__
-            self.color.update({category: i})
-
-            self.mainscr.clear()
-            self.mainscr.addstr(0, 0, category+": データ取得中")
-            self.mainscr.refresh()
-
-            if category in self.config:
-                if self.config[category].get("color_text") and self.config[category].get("color_back"):
-                    color_pair = dict(self.config[category])
-                else:
-                    color_pair = p.color_pair()
-            else:
-                color_pair = p.color_pair()
-
-            curses.init_pair(i, eval("curses.COLOR_"+color_pair["color_text"]), eval("curses.COLOR_"+color_pair["color_back"]))
-            # curses.init_pair(i+10, eval("curses.COLOR_"+color_pair["text"]), curses.COLOR_BLACK)
-
-        self.tl(self.mainscr)
+        # get plugins color pair
+        self.color_pair()
 
         # set color setting
         curses.init_pair(70, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
         self.color.update({"url": 70})
 
+        # get plugins timeline
+        self.timeline(self.mainscr)
+
+        # entry point
         try:
             self.setup()
-
-            ## main loop
             self.loop()
 
         finally:
             self.final()
 
-    ## main: screen setup
-    def setup(self, win=False):
-        try:
-            if win == self.subscr:
-                self.detail_y, self.detail_x = self.subscr.getmaxyx()
-        except:
-            win = self.mainscr
-            self.main_y, self.main_x = self.mainscr.getmaxyx()
-
-        win.keypad(True)
-        win.border(0)
-        win.refresh()
-
-    ## main: loop
+    ## mainscr: loop
     def loop(self):
         while 1:
             self.focus = "main"
             self.main_y, self.main_x = self.mainscr.getmaxyx()
 
-            #-----> debug
             setsumei = [
                     "[t] Open",
                     "[q] Close",
                     "[r] Refresh",
                     ]
 
+            #-----> debug
             setsumei_debug = [
                     "x: "+str(self.main_x),
                     "y: "+str(self.main_y),
@@ -141,23 +106,21 @@ class Gaccho:
                     "pair: "+str(self.key_pair),
                     ]
             setsumei = setsumei + setsumei_debug
-            self.mainscr.addstr(0, 0, "  ".join(setsumei))
             #<----- debug
 
-            for index, item in enumerate(self.timeline[self.offset_y:]):
+            self.mainscr.addstr(0, 0, "  ".join(setsumei))
+
+            for index, item in enumerate(self.tl[self.offset_y:]):
                 if index < self.main_y-EDGE_HEIGHT:
                     category = '%s' % (item[ARTICLE_CATEGORY])
-                    # message = item[ARTICLE_BODY]
-                    # message = message.replace('\n',' ')
-                    # message = message.replace('\r',' ')
+
+                    # message
                     if item[ARTICLE_TITLE] != "":
                         message = item[ARTICLE_TITLE]
                     else:
                         message = item[ARTICLE_BODY]
                     message = message.split("\n")
                     message = message[0]
-
-                    url = item[ARTICLE_URL]
 
                     if index == self.position-self.offset_y:
                         message_color = curses.A_REVERSE
@@ -168,33 +131,39 @@ class Gaccho:
                         #     message_color = curses.A_NORMAL
                         message_color = curses.A_NORMAL
 
+                    # category
                     if category in self.color.keys():
                         category_color = curses.color_pair(self.color[category])
                     else:
                         category_color = curses.A_NORMAL
 
+                    # render tl
                     self.mainscr.addstr(EDGE_TOP+index,     1, self.truncate(category.ljust(8), 8+EDGE_RIGHT, False), category_color)
                     self.mainscr.addstr(EDGE_BOTTOM+index, 10, self.truncate(message, self.main_x-8-EDGE_WIDTH-2), message_color)
 
+            # input
             c = self.mainscr.getch()
             self.mainscr.refresh()
             if c == ord('q'): break # Exit the while()
             elif self.controll(c, self.mainscr) == False:
                 break
 
-    ## detail: loop
+    ## subscr: loop
     def detail(self, article):
-        self.focus = "detail"
-
         self.subscr = curses.newwin(self.main_y-4, self.main_x-4, 2, 2)
         self.setup(self.subscr)
         self.subscr.box()
         self.detail_y, self.detail_x = self.subscr.getmaxyx()
 
+        line_height = 0
+
         # timestamp, author
-        height_timestamp = 1
+        height_timestamp = EDGE_TOP
 
         self.subscr.addstr(height_timestamp, EDGE_LEFT, str(article[ARTICLE_AUTHOR]+" ["+article[ARTICLE_TIMESTAMP]+"]"))
+
+        # line
+        line_height += 1
         self.subscr.hline(height_timestamp+1, EDGE_LEFT, curses.ACS_HLINE, self.detail_x-EDGE_WIDTH)
 
         # category
@@ -206,7 +175,7 @@ class Gaccho:
         self.subscr.addstr(EDGE_TOP,self.detail_x-EDGE_RIGHT-len(str(article[ARTICLE_CATEGORY]))-3,"["+str(article[ARTICLE_CATEGORY])+"]",category_color)
 
         # title
-        height_title = height_timestamp + 1
+        height_title = height_timestamp + line_height
         if article[ARTICLE_TITLE] != "":
             article_title = self.carriage(article[ARTICLE_TITLE], self.detail_x-EDGE_WIDTH-3)
             for line in article_title:
@@ -223,12 +192,13 @@ class Gaccho:
             self.subscr.addstr(EDGE_TOP+height_url,EDGE_LEFT,article_url[line], curses.color_pair(self.color["url"]))
             height_url += 1
 
+        # line
+        line_height += 1
         self.subscr.hline(height_url+1, EDGE_LEFT, curses.ACS_HLINE, self.detail_x-EDGE_WIDTH)
 
         # body
         i = 0
-        j = height_url+2
-
+        j = height_url+line_height
         message = str(article[ARTICLE_BODY]).split("\n")
         for line in message:
             inner = self.carriage(message[i], self.detail_x-EDGE_WIDTH-3)
@@ -242,9 +212,10 @@ class Gaccho:
                 self.subscr.addstr(j,EDGE_LEFT,"...")
                 break
 
-        self.subscr.refresh()
-
         while 1:
+            self.focus = "detail"
+
+            # input
             c = self.subscr.getch()
             if c == ord('q'):
                 self.subscr.clear()
@@ -253,35 +224,41 @@ class Gaccho:
             elif self.controll(c, self.subscr) == False:
                 break # Exit the while()
 
+    ## screen setup
+    def setup(self, win=False):
+        try:
+            if win == self.subscr:
+                self.detail_y, self.detail_x = self.subscr.getmaxyx()
+        except:
+            win = self.mainscr
+            self.main_y, self.main_x = self.mainscr.getmaxyx()
+
+        win.keypad(True)
+        win.border(0)
+        win.refresh()
+
     ## key operation
     def controll(self, key, win):
 
         ## r
         if key == ord("r"):
-            if win == self.mainscr:
-                self.tl(win)
-                win.clear()
-                self.setup(win)
-            elif win == self.subscr:
-                win.clear()
-                win.refresh()
-                self.setup(win)
+            win.clear()
+            self.setup(win)
 
-                self.detail(self.timeline[self.position])
+            if win == self.mainscr:
+                self.timeline(win)
+            elif win == self.subscr:
+                self.detail(self.tl[self.position])
                 return False
 
         ## resize window
         elif key == curses.KEY_RESIZE:
-            if win == self.mainscr:
-                win.clear()
-                self.setup(win)
-            elif win == self.subscr:
-                self.main_y, self.main_x = self.mainscr.getmaxyx()
-                win.clear()
-                win.refresh()
-                self.setup(win)
+            win.clear()
+            self.setup(win)
 
-                self.detail(self.timeline[self.position])
+            if self.focus == "detail":
+                self.main_y, self.main_x = self.mainscr.getmaxyx()
+                self.detail(self.tl[self.position])
                 return False
 
         ## up, k
@@ -310,11 +287,12 @@ class Gaccho:
             self.navigate(self.main_y-EDGE_BOTTOM-(self.position-self.offset_y), win)
             self.offset_y = self.position
 
-        ## Enter, t, o
+        ## enter, t, o
         elif key == 10 or key == ord("t") or key == ord("o"):
             if self.focus == "main":
-                self.detail(self.timeline[self.position])
+                self.detail(self.tl[self.position])
 
+        ## repeat[0-9]
         elif 48 <= key <= 57:
             input_num = str(key - 48)
             exist_num = str(self.key_repeat)
@@ -324,24 +302,27 @@ class Gaccho:
             else:
                 self.key_repeat = int(input_num)
 
+        ## gg
         elif self.key_pair == ord("g") and key == ord("g"):
             self.position = 0
             self.offset_y = 0
             self.key_pair = ""
 
+        ## G
         elif key == ord("G"):
             win.clear()
             self.setup(win)
-            self.position = len(self.timeline)-1
-            self.offset_y = len(self.timeline)-1
+            self.position = len(self.tl)-1
+            self.offset_y = len(self.tl)-1
 
+        ## input stack
         else:
             self.key_pair = key
 
         if win == self.mainscr:
             pass
         elif win == self.subscr:
-            self.detail(self.timeline[self.position])
+            self.detail(self.tl[self.position])
             return False
 
         return True
@@ -367,33 +348,52 @@ class Gaccho:
             self.mainscr.clear()
 
             self.offset_y = self.position+EDGE_HEIGHT+EDGE_BOTTOM - self.main_y
-            if self.position >= len(self.timeline):
-                self.offset_y = len(self.timeline)-1
+            if self.position >= len(self.tl):
+                self.offset_y = len(self.tl)-1
 
         ## 可動範囲制御
         if self.position < 0:
             self.position = 0
-        elif self.position >= len(self.timeline):
-            self.position = len(self.timeline)-1
+        elif self.position >= len(self.tl):
+            self.position = len(self.tl)-1
         if self.offset_y < 0:
             self.offset_y = 0
-        elif self.offset_y >= len(self.timeline):
-            self.offset_y = len(self.timeline)-1
+        elif self.offset_y >= len(self.tl):
+            self.offset_y = len(self.tl)-1
 
         self.setup(win)
 
+    ## color setting
+    def color_pair(self):
+        i=0
+        for p in self.plugins:
+            i += 1
+            category = p.__class__.__name__
+            self.color.update({category: i})
+
+            if category in self.config:
+                if self.config[category].get("color_text") and self.config[category].get("color_back"):
+                    color_pair = dict(self.config[category])
+                else:
+                    color_pair = p.color_pair()
+            else:
+                color_pair = p.color_pair()
+
+            curses.init_pair(i, eval("curses.COLOR_"+color_pair["color_text"]), eval("curses.COLOR_"+color_pair["color_back"]))
+            # curses.init_pair(i+10, eval("curses.COLOR_"+color_pair["text"]), curses.COLOR_BLACK)
+
     ## get timeline
-    def tl(self, win):
-        self.timeline = []
+    def timeline(self, win):
+        self.tl = []
         for p in self.plugins:
             category = p.__class__.__name__
             win.clear()
-            win.addstr(0, 0, category+": データ取得中")
+            win.addstr(0, 0, category+": Loading...")
             win.refresh()
-            self.timeline = self.timeline + p.get()
+            self.tl = self.tl + p.get()
 
         ## sort by timestamp
-        self.timeline = sorted(self.timeline, key=lambda x:x[ARTICLE_TIMESTAMP], reverse=True)
+        self.tl = sorted(self.tl, key=lambda x:x[ARTICLE_TIMESTAMP], reverse=True)
 
     ## final
     def final(self):
