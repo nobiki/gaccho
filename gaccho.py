@@ -4,6 +4,7 @@
 import curses
 import os
 import time
+import datetime
 import sys
 import re
 import pkg_resources
@@ -387,10 +388,29 @@ class Gaccho:
         self.tl = []
         for p in self.plugins:
             category = p.__class__.__name__
+            cachefile = "cache/"+category
+
+            interval = 999
+            if category in self.config:
+                if self.config[category].get("interval"):
+                    interval = self.config[category].get("interval")
+
             win.clear()
             win.addstr(0, 0, category+": Loading...")
             win.refresh()
-            self.tl = self.tl + p.get()
+
+            if os.path.exists(cachefile):
+                dt  = datetime.datetime.fromtimestamp(os.stat(cachefile).st_mtime)
+                diff = (datetime.datetime.now() - dt).total_seconds() / 60
+
+                if int(diff) < int(interval):
+                    f = open(cachefile)
+                    self.tl = self.tl + eval(f.read())
+                    f.close()
+                else:
+                    self.tl = self.tl + p.get()
+            else:
+                self.tl = self.tl + p.get()
 
         ## sort by timestamp
         self.tl = sorted(self.tl, key=lambda x:x[ARTICLE_TIMESTAMP], reverse=True)

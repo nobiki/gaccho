@@ -14,3 +14,8 @@ class Article:
         s.feed(html)
         return s.get_data()
 
+    def cache_save(self, filename, list_tl):
+        f = open(filename, "w")
+        f.write(str(list_tl))
+        f.close()
+
