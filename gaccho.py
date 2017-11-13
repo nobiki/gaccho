@@ -410,7 +410,9 @@ class Gaccho:
                 else:
                     self.tl = self.tl + p.get()
             else:
-                os.mkdir("cache")
+                if os.path.exists("cache") == False:
+                    os.mkdir("cache")
+
                 self.tl = self.tl + p.get()
 
         ## sort by timestamp
