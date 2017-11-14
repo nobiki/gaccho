@@ -5,7 +5,7 @@ services:
     gaccho:
         container_name: gaccho
         hostname: gaccho
-        image: gaccho:latest
+        image: nobiki/gaccho:latest
         volumes:
             - /var/lib/boot2docker/gaccho/gaccho.ini:/gaccho.ini
         tty: true
