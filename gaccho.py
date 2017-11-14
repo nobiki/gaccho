@@ -11,9 +11,9 @@ import pkg_resources
 import importlib
 import configparser
 
-import locale
+# import locale
 import unicodedata
-locale.setlocale(locale.LC_ALL, "")
+# locale.setlocale(locale.LC_ALL, "")
 
 import Article
 
