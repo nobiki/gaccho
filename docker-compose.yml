@@ -6,8 +6,6 @@ services:
         container_name: gaccho
         hostname: gaccho
         image: gaccho:latest
-        networks:
-            b0:
-                ipv4_address: 172.18.0.190
         volumes:
             - /var/lib/boot2docker/gaccho/gaccho.ini:/usr/local/lib/gaccho/gaccho.ini
+        tty: true
