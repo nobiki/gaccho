@@ -16,6 +16,6 @@ class Article:
 
     def cache_save(self, filename, list_tl):
         f = open(filename, "w")
-        f.write(str(list_tl))
+        f.write(str(list_tl).encode("utf-8"))
         f.close()
 
