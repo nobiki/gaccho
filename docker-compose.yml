@@ -7,5 +7,5 @@ services:
         hostname: gaccho
         image: gaccho:latest
         volumes:
-            - /var/lib/boot2docker/gaccho/gaccho.ini:/usr/local/lib/gaccho/gaccho.ini
+            - /var/lib/boot2docker/gaccho/gaccho.ini:/gaccho.ini
         tty: true
