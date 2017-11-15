@@ -247,7 +247,7 @@ class Gaccho:
             self.setup(win)
 
             if win == self.mainscr:
-                self.timeline(win)
+                self.timeline(win, False)
             elif win == self.subscr:
                 self.detail(self.tl[self.position])
                 return False
@@ -384,7 +384,7 @@ class Gaccho:
             # curses.init_pair(i+10, eval("curses.COLOR_"+color_pair["text"]), curses.COLOR_BLACK)
 
     ## get timeline
-    def timeline(self, win):
+    def timeline(self, win, cache = True):
         self.tl = []
         for p in self.plugins:
             category = p.__class__.__name__
@@ -399,7 +399,7 @@ class Gaccho:
             win.addstr(0, 0, category+": Loading...")
             win.refresh()
 
-            if os.path.exists(cachefile):
+            if os.path.exists(cachefile) and cache == True:
                 dt  = datetime.datetime.fromtimestamp(os.stat(cachefile).st_mtime)
                 diff = (datetime.datetime.now() - dt).total_seconds() / 60
 
