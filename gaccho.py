@@ -25,11 +25,12 @@ EDGE_HEIGHT = EDGE_TOP + EDGE_BOTTOM
 EDGE_WIDTH = EDGE_LEFT + EDGE_RIGHT
 
 ARTICLE_CATEGORY    = 0
-ARTICLE_TIMESTAMP   = 1
-ARTICLE_AUTHOR      = 2
-ARTICLE_TITLE       = 3
-ARTICLE_URL         = 4
-ARTICLE_BODY        = 5
+ARTICLE_FEEDTITLE   = 1
+ARTICLE_TIMESTAMP   = 2
+ARTICLE_AUTHOR      = 3
+ARTICLE_TITLE       = 4
+ARTICLE_URL         = 5
+ARTICLE_BODY        = 6
 
 class Gaccho:
     focus       = ""
@@ -161,7 +162,7 @@ class Gaccho:
         # timestamp, author
         height_timestamp = EDGE_TOP
 
-        self.subscr.addstr(height_timestamp, EDGE_LEFT, str(article[ARTICLE_AUTHOR]+" ["+article[ARTICLE_TIMESTAMP]+"]"))
+        self.subscr.addstr(height_timestamp, EDGE_LEFT, str("["+article[ARTICLE_TIMESTAMP]+"] author: "+article[ARTICLE_AUTHOR]))
 
         # line
         line_height += 1
@@ -178,7 +179,7 @@ class Gaccho:
         # title
         height_title = height_timestamp + line_height
         if article[ARTICLE_TITLE] != "":
-            article_title = self.carriage(article[ARTICLE_TITLE], self.detail_x-EDGE_WIDTH-3)
+            article_title = self.carriage(article[ARTICLE_TITLE]+" ["+article[ARTICLE_FEEDTITLE]+"]", self.detail_x-EDGE_WIDTH-3)
             for line in article_title:
                 if height_title > 1:
                     self.subscr.addstr(EDGE_TOP+height_title,EDGE_LEFT,article_title[line])
