@@ -11,5 +11,6 @@ ENV LC_ALL ja_JP.UTF-8
 RUN git clone "https://github.com/nobiki/gaccho.git" /usr/local/lib/gaccho
 
 RUN pip3 install git+https://github.com/nobiki/gaccho_rss.git
+RUN pip3 install git+https://github.com/nobiki/gaccho_twitter.git
 
 CMD ["python3","/usr/local/lib/gaccho/gaccho.py"]
