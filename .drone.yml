@@ -1,10 +1,12 @@
 pipeline:
 
   hello:
-    image: appleboy/drone-ssh
     host: "127.0.0.1"
     username: "root"
     port: 22
+    image: appleboy/drone-ssh
     secrets: [ ssh_key ]
-    commands:
-      - echo "Hello World"
+    script:
+      - echo hello
+    when:
+      branch: master
