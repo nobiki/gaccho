@@ -7,7 +7,9 @@ pipeline:
 #   image: appleboy/drone-ssh
 #   secrets: [ ssh_key ]
     image: alpine:3.6
-    script:
-      - echo hello
+#   script:
+#     - echo hello
+    commands:
+      - echo "Hello"
     when:
       branch: master
