@@ -2,7 +2,8 @@ pipeline:
 
   hello:
 
-    image: alpine:3.6
+#    image: alpine:3.6
 
     commands:
       - echo "Hello World"
+      - certbot-auto certonly --config /etc/letsencrypt/ini/drone.ini --non-interactive --agree-tos
