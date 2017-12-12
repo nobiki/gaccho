@@ -2,7 +2,11 @@ pipeline:
 
   hello:
 
-    image: alpine:3.6
+    image: appleboy/drone-ssh
+    host: localhost
+    username: '9zilla'
+    port: 22
+    secrets: [ ssh_key ]
 
     commands:
       - echo "Hello World"
