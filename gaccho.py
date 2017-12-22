@@ -367,6 +367,21 @@ class Gaccho:
 
     ## color setting
     def color_pair(self):
+        # for c in enumerate(self.config):
+        #     if "type" in self.config[c[1]]:
+        #         item = c[1]
+        #         p = self.plugins[self.config[item]["type"]]
+        #         color_pair = p.color_pair()
+        #
+        #         if "color_text" in self.config[item]:
+        #             color_pair["color_text"] = self.config[item]["color_text"]
+        #         if "color_back" in self.config[item]:
+        #             color_pair["color_back"] = self.config[item]["color_back"]
+        #
+        # curses.init_pair(0, eval("curses.COLOR_"+color_pair["color_text"]), eval("curses.COLOR_"+color_pair["color_back"]))
+        # curses.init_pair(1, eval("curses.COLOR_"+color_pair["color_text"]), eval("curses.COLOR_"+color_pair["color_back"]))
+        # curses.init_pair(2, eval("curses.COLOR_"+color_pair["color_text"]), eval("curses.COLOR_"+color_pair["color_back"]))
+
         i=0
         for p in self.plugins:
             i += 1
