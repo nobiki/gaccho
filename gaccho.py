@@ -370,8 +370,9 @@ class Gaccho:
         # for c in enumerate(self.config):
         #     if "type" in self.config[c[1]]:
         #         item = c[1]
-        #         p = self.plugins[self.config[item]["type"]]
-        #         color_pair = p.color_pair()
+        #         ptype = self.config[c[1]]["type"]
+        #         # p = self.plugins[ptype]
+        #         # color_pair = p.color_pair()
         #
         #         if "color_text" in self.config[item]:
         #             color_pair["color_text"] = self.config[item]["color_text"]
@@ -386,7 +387,14 @@ class Gaccho:
         for p in self.plugins:
             i += 1
             category = p.__class__.__name__
-            self.color.update({category: i})
+
+            # self.color.update({category: i})
+            for c in enumerate(self.config):
+                if "type" in self.config[c[1]]:
+                    item = c[1]
+                    ptype = self.config[c[1]]["type"]
+                    if category == ptype:
+                        self.color.update({item: i})
 
             if category in self.config:
                 if self.config[category].get("color_text") and self.config[category].get("color_back"):
