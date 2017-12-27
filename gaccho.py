@@ -415,7 +415,7 @@ class Gaccho:
                 dt  = datetime.datetime.fromtimestamp(os.stat(cachefile).st_mtime)
                 diff = (datetime.datetime.now() - dt).total_seconds() / 60
 
-                if int(diff) < int(interval):
+                if int(diff) < int(interval) or int(interval) == 0:
                     f = open(cachefile)
                     self.tl = self.tl + eval(f.read())
                     f.close()
