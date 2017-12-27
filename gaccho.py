@@ -127,10 +127,6 @@ class Gaccho:
                     if index == self.position-self.offset_y:
                         message_color = curses.A_REVERSE
                     else:
-                        # if category in self.color.keys():
-                        #     message_color = curses.color_pair(self.color[category]+10)
-                        # else:
-                        #     message_color = curses.A_NORMAL
                         message_color = curses.A_NORMAL
 
                     # category
@@ -367,27 +363,17 @@ class Gaccho:
 
     ## color setting
     def color_pair(self):
-        # for c in enumerate(self.config):
-        #     if "type" in self.config[c[1]]:
-        #         item = c[1]
-        #         ptype = self.config[c[1]]["type"]
-        #         # p = self.plugins[ptype]
-        #         # color_pair = p.color_pair()
-        #
-        #         if "color_text" in self.config[item]:
-        #             color_pair["color_text"] = self.config[item]["color_text"]
-        #         if "color_back" in self.config[item]:
-        #             color_pair["color_back"] = self.config[item]["color_back"]
-        #
-        # curses.init_pair(0, eval("curses.COLOR_"+color_pair["color_text"]), eval("curses.COLOR_"+color_pair["color_back"]))
-        # curses.init_pair(1, eval("curses.COLOR_"+color_pair["color_text"]), eval("curses.COLOR_"+color_pair["color_back"]))
-        # curses.init_pair(2, eval("curses.COLOR_"+color_pair["color_text"]), eval("curses.COLOR_"+color_pair["color_back"]))
-
         i=0
         for p in self.plugins:
             category = p.__class__.__name__
 
-            # self.color.update({category: i})
+            # plugin default color setting load.
+            i += 1
+            color_pair = p.color_pair()
+            self.color.update({category: i})
+            curses.init_pair(i, eval("curses.COLOR_"+color_pair["color_text"]), eval("curses.COLOR_"+color_pair["color_back"]))
+
+            # type color setting load.
             for c in enumerate(self.config):
                 i += 1
                 item = c[1]
@@ -396,10 +382,10 @@ class Gaccho:
                     ptype = self.config[c[1]]["type"]
                     if category == ptype:
                         self.color.update({item: i})
-                    else:
-                        self.color.update({category: i})
-                else:
-                    self.color.update({category: i})
+                #     else:
+                #         self.color.update({category: i})
+                # else:
+                #     self.color.update({category: i})
 
                 if item in self.config and self.config[item].get("color_text") and self.config[item].get("color_back"):
                     color_pair = dict(self.config[item])
@@ -409,8 +395,6 @@ class Gaccho:
                     color_pair = p.color_pair()
                 curses.init_pair(i, eval("curses.COLOR_"+color_pair["color_text"]), eval("curses.COLOR_"+color_pair["color_back"]))
 
-            # curses.init_pair(i+10, eval("curses.COLOR_"+color_pair["text"]), curses.COLOR_BLACK)
-
     ## get timeline
     def timeline(self, win, cache = True):
         self.tl = []
@@ -418,7 +402,7 @@ class Gaccho:
             category = p.__class__.__name__
             cachefile = "cache/"+category
 
-            interval = 999
+            interval = 60
             if category in self.config:
                 if self.config[category].get("interval"):
                     interval = self.config[category].get("interval")
