@@ -385,26 +385,30 @@ class Gaccho:
 
         i=0
         for p in self.plugins:
-            i += 1
             category = p.__class__.__name__
 
             # self.color.update({category: i})
             for c in enumerate(self.config):
+                i += 1
+                item = c[1]
+
                 if "type" in self.config[c[1]]:
-                    item = c[1]
                     ptype = self.config[c[1]]["type"]
                     if category == ptype:
                         self.color.update({item: i})
+                    else:
+                        self.color.update({category: i})
+                else:
+                    self.color.update({category: i})
 
-            if category in self.config:
-                if self.config[category].get("color_text") and self.config[category].get("color_back"):
+                if item in self.config and self.config[item].get("color_text") and self.config[item].get("color_back"):
+                    color_pair = dict(self.config[item])
+                elif category in self.config and self.config[category].get("color_text") and self.config[category].get("color_back"):
                     color_pair = dict(self.config[category])
                 else:
                     color_pair = p.color_pair()
-            else:
-                color_pair = p.color_pair()
+                curses.init_pair(i, eval("curses.COLOR_"+color_pair["color_text"]), eval("curses.COLOR_"+color_pair["color_back"]))
 
-            curses.init_pair(i, eval("curses.COLOR_"+color_pair["color_text"]), eval("curses.COLOR_"+color_pair["color_back"]))
             # curses.init_pair(i+10, eval("curses.COLOR_"+color_pair["text"]), curses.COLOR_BLACK)
 
     ## get timeline
