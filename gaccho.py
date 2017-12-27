@@ -41,6 +41,7 @@ class Gaccho:
 
     key_repeat  = 0
     key_pair    = ""
+    key_trigger = ""
 
     def __init__(self, stdscr):
 
@@ -106,6 +107,7 @@ class Gaccho:
                     "offset: "+str(self.offset_y),
                     "repeat: "+str(self.key_repeat),
                     "pair: "+str(self.key_pair),
+                    "trigger: "+str(self.key_trigger),
                     ]
             setsumei = setsumei + setsumei_debug
             #<----- debug
@@ -150,7 +152,6 @@ class Gaccho:
     def detail(self, article):
         self.subscr = curses.newwin(self.main_y-4, self.main_x-4, 2, 2)
         self.setup(self.subscr)
-        self.subscr.box()
         self.detail_y, self.detail_x = self.subscr.getmaxyx()
 
         line_height = 0
@@ -305,6 +306,22 @@ class Gaccho:
             self.position = 0
             self.offset_y = 0
             self.key_pair = ""
+
+        ## ma
+        elif self.key_pair == ord("m") and key == ord("a"):
+            self.key_trigger = "mark all"
+            self.key_pair = ""
+
+        ## mm
+        elif self.key_pair == ord("m") and key == ord("m"):
+            if self.key_repeat > 0:
+                self.key_trigger = "mark ("+str(self.key_repeat)+")"
+                self.key_repeat = 0
+            else:
+                self.key_trigger = "mark one"
+            self.key_pair = ""
+
+
 
         ## G
         elif key == ord("G"):
