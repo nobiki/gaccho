@@ -171,7 +171,7 @@ class Gaccho:
         else:
             category_color = curses.A_NORMAL
 
-        self.subscr.addstr(EDGE_TOP,self.detail_x-EDGE_RIGHT-len(str(article[ARTICLE_CATEGORY]))-3,"["+str(article[ARTICLE_CATEGORY])+"]",category_color)
+        self.subscr.addstr(EDGE_TOP,self.detail_x-EDGE_RIGHT-self.strlen(str(article[ARTICLE_CATEGORY]))-3,"["+str(article[ARTICLE_CATEGORY])+"]",category_color)
 
         # title
         height_title = height_timestamp + line_height
@@ -453,6 +453,18 @@ class Gaccho:
         curses.nocbreak()
         self.mainscr.keypad(False)
         curses.endwin()
+
+    ## get length
+    def strlen(self, text):
+        length = 0
+
+        for char in list(text):
+            if unicodedata.east_asian_width(char) == "W":
+                length += 2
+            else:
+                length += 1
+
+        return length
 
     ## truncate long text
     def truncate(self, message, num_bytes, suffix=True, encoding='utf-8'):
