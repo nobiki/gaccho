@@ -155,6 +155,7 @@ class Gaccho:
     ## subscr: loop
     def detail(self, article):
         self.subscr = curses.newwin(self.main_y-4, self.main_x-4, 2, 2)
+        self.subscr.clear()
         self.setup(self.subscr)
         self.detail_y, self.detail_x = self.subscr.getmaxyx()
 
