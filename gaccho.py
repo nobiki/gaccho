@@ -24,6 +24,8 @@ EDGE_RIGHT = 1
 EDGE_HEIGHT = EDGE_TOP + EDGE_BOTTOM
 EDGE_WIDTH = EDGE_LEFT + EDGE_RIGHT
 
+CATEGORY_WIDTH = 8
+
 ARTICLE_CATEGORY    = 0
 ARTICLE_FEEDTITLE   = 1
 ARTICLE_TIMESTAMP   = 2
@@ -45,16 +47,7 @@ class Gaccho:
 
     def __init__(self, stdscr):
 
-        ## curses initialize
-        curses.noecho()
-        curses.cbreak()
-        curses.start_color()
-        curses.curs_set(0)
-
-        ## window initialize
-        self.position = 0
-        self.offset_y = 0
-        self.mainscr = stdscr
+        curses.endwin()
 
         ## load config
         self.config = configparser.ConfigParser()
@@ -68,6 +61,17 @@ class Gaccho:
                 module = importlib.import_module(dist.project_name.replace("-","_")+"."+ClassName)
                 Klass = getattr(module, ClassName)
                 self.plugins.append(Klass())
+
+        ## curses initialize
+        curses.noecho()
+        curses.cbreak()
+        curses.start_color()
+        curses.curs_set(0)
+
+        ## window initialize
+        self.position = 0
+        self.offset_y = 0
+        self.mainscr = stdscr
 
         # get plugins color pair
         self.color_pair()
@@ -138,8 +142,8 @@ class Gaccho:
                         category_color = curses.A_NORMAL
 
                     # render tl
-                    self.mainscr.addstr(EDGE_TOP+index,     1, self.truncate(category.ljust(8), 8+EDGE_RIGHT, False), category_color)
-                    self.mainscr.addstr(EDGE_BOTTOM+index, 10, self.truncate(message, self.main_x-8-EDGE_WIDTH-2), message_color)
+                    self.mainscr.addstr(EDGE_TOP+index,     1, self.truncate(category.ljust(CATEGORY_WIDTH), CATEGORY_WIDTH+EDGE_RIGHT, False), category_color)
+                    self.mainscr.addstr(EDGE_BOTTOM+index, CATEGORY_WIDTH+2, self.truncate(message, self.main_x-EDGE_WIDTH-CATEGORY_WIDTH-6), message_color)
 
             # input
             c = self.mainscr.getch()
@@ -181,7 +185,7 @@ class Gaccho:
                 if height_title > 1:
                     self.subscr.addstr(EDGE_TOP+height_title,EDGE_LEFT,article_title[line])
                 else:
-                    self.subscr.addstr(EDGE_TOP+height_title,EDGE_LEFT,self.truncate(article_title[line], self.detail_x-EDGE_WIDTH-8-EDGE_WIDTH-EDGE_RIGHT))
+                    self.subscr.addstr(EDGE_TOP+height_title,EDGE_LEFT,self.truncate(article_title[line], self.detail_x-EDGE_WIDTH-CATEGORY_WIDTH-EDGE_WIDTH-EDGE_RIGHT))
                 height_title += 1
 
         # url
