@@ -9,4 +9,3 @@ update:
 
 remove:
 	pip uninstall gaccho-${PACKAGE}
-

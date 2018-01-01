@@ -9,5 +9,5 @@ setup(name="Gaccho",
       author="Naoaki Obiki",
       author_email="obiki.wk@gmail.com",
       url="https://github.com/nobiki/gaccho",
-      packages=["gaccho"],
+      packages=["gaccho","gaccho/lib"],
      )
