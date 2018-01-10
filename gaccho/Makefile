@@ -9,3 +9,6 @@ update:
 
 remove:
 	pip uninstall gaccho-${PACKAGE}
+
+container:
+	docker run --rm -it -v $$PWD:/app python:3.6 /bin/bash -c "cd /app/ && mkdir cache && make install PACKAGE=rss && make install PACKAGE=twitter && python ./gaccho.py"
