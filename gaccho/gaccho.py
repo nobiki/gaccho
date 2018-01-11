@@ -100,8 +100,8 @@ class Gaccho:
             self.main_y, self.main_x = self.mainscr.getmaxyx()
 
             setsumei = [
-                    "[LastUpdate] "+self.lastupdate,
-                    "[t] Open",
+                    "[Last Update] "+self.lastupdate,
+                    "[o] Open",
                     "[q] Close",
                     "[r] Refresh",
                     ]
@@ -248,7 +248,7 @@ class Gaccho:
     def controll(self, key, win):
 
         ## r
-        if key == ord("r"):
+        if self.key_pair == "" and key == ord("r"):
             win.clear()
             self.setup(win)
 
@@ -269,7 +269,7 @@ class Gaccho:
                 return False
 
         ## up, k
-        elif key == curses.KEY_UP or key == ord("k"):
+        elif self.key_pair == "" and (key == curses.KEY_UP or key == ord("k")):
             if self.key_repeat > 0:
                 self.navigate(self.key_repeat * -1, win)
                 self.key_repeat = 0
@@ -277,7 +277,7 @@ class Gaccho:
                 self.navigate(-1, win)
 
         ## down, j
-        elif key == curses.KEY_DOWN or key == ord("j"):
+        elif self.key_pair == "" and (key == curses.KEY_DOWN or key == ord("j")):
             if self.key_repeat > 0:
                 self.navigate(self.key_repeat, win)
                 self.key_repeat = 0
@@ -285,17 +285,17 @@ class Gaccho:
                 self.navigate(1, win)
 
         ## left, PageUp, h
-        elif key == curses.KEY_LEFT or key == curses.KEY_PPAGE or key == ord("h") or key == ord("u"):
+        elif self.key_pair == "" and (key == curses.KEY_LEFT or key == curses.KEY_PPAGE or key == ord("h") or key == ord("u")):
             self.navigate((self.main_y-EDGE_TOP+(self.position-self.offset_y)) * -1, win)
             self.offset_y = self.position
 
         ## right, PageDown, l
-        elif key == curses.KEY_RIGHT or key == curses.KEY_NPAGE or key == ord("l") or key == ord("d"):
+        elif self.key_pair == "" and (key == curses.KEY_RIGHT or key == curses.KEY_NPAGE or key == ord("l") or key == ord("d")):
             self.navigate(self.main_y-EDGE_BOTTOM-(self.position-self.offset_y), win)
             self.offset_y = self.position
 
-        ## enter, t, o
-        elif key == 10 or key == ord("t") or key == ord("o"):
+        ## enter, o
+        elif self.key_pair == "" and (key == 10 or key == ord("o")):
             if self.focus == "main":
                 self.detail(self.tl[self.position])
 
@@ -315,12 +315,39 @@ class Gaccho:
             self.offset_y = 0
             self.key_pair = ""
 
-        ## ma
+        ## G
+        elif key == ord("G"):
+            win.clear()
+            self.setup(win)
+            self.position = len(self.tl)-1
+            self.offset_y = len(self.tl)-1
+
+        ## tweet tw
+        elif self.key_pair == ord("t") and key == ord("w"):
+            self.key_trigger = "tweet"
+            self.key_pair = ""
+
+        ## re tweet tr
+        elif self.key_pair == ord("t") and key == ord("r"):
+            self.key_trigger = "retweet"
+            self.key_pair = ""
+
+        ## del tweet td
+        elif self.key_pair == ord("t") and key == ord("d"):
+            self.key_trigger = "del tweet"
+            self.key_pair = ""
+
+        ## fav tweet tf
+        elif self.key_pair == ord("t") and key == ord("f"):
+            self.key_trigger = "fav tweet"
+            self.key_pair = ""
+
+        ## mark all ma
         elif self.key_pair == ord("m") and key == ord("a"):
             self.key_trigger = "mark all"
             self.key_pair = ""
 
-        ## mm
+        ## mark one mm
         elif self.key_pair == ord("m") and key == ord("m"):
             if self.key_repeat > 0:
                 self.key_trigger = "mark ("+str(self.key_repeat)+")"
@@ -329,18 +356,12 @@ class Gaccho:
                 self.key_trigger = "mark one"
             self.key_pair = ""
 
-
-
-        ## G
-        elif key == ord("G"):
-            win.clear()
-            self.setup(win)
-            self.position = len(self.tl)-1
-            self.offset_y = len(self.tl)-1
-
         ## input stack
         else:
-            self.key_pair = key
+            if self.key_pair == "":
+                self.key_pair = key
+            else:
+                self.key_pair = ""
 
         if win == self.mainscr:
             pass
