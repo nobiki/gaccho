@@ -361,6 +361,7 @@ class Gaccho:
             if self.key_pair == "":
                 self.key_pair = key
             else:
+                self.key_trigger = "out of pair"
                 self.key_pair = ""
 
         if win == self.mainscr:
