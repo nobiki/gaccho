@@ -45,6 +45,8 @@ class Gaccho:
     key_pair    = ""
     key_trigger = ""
 
+    lastupdate = ""
+
     def __init__(self, stdscr):
 
         curses.endwin()
@@ -98,6 +100,7 @@ class Gaccho:
             self.main_y, self.main_x = self.mainscr.getmaxyx()
 
             setsumei = [
+                    "[LastUpdate] "+self.lastupdate,
                     "[t] Open",
                     "[q] Close",
                     "[r] Refresh",
@@ -420,6 +423,8 @@ class Gaccho:
     ## get timeline
     def timeline(self, win, cache = True):
         self.tl = []
+        self.lastupdate = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+
         for p in self.plugins:
             category = p.__class__.__name__
             cachefile = "cache/"+category
@@ -441,6 +446,8 @@ class Gaccho:
                     f = open(cachefile)
                     self.tl = self.tl + eval(f.read())
                     f.close()
+
+                    self.lastupdate = dt.strftime('%Y/%m/%d %H:%M:%S')
                 else:
                     self.tl = self.tl + p.get()
             else:

@@ -23,3 +23,9 @@ $ make remove PACKAGE=[PACKAGE NAME]
 example:
 $ make install PACKAGE=rss
 ```
+
+#### Run with docker
+
+```
+$ make container
+```
