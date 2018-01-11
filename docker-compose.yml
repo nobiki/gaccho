@@ -1,0 +1,16 @@
+version: "2"
+
+services:
+
+    ##
+    # Debian Workspace
+    ##
+    gaccho:
+        container_name: gaccho
+        hostname: gaccho
+        image: python:3.6
+        environment:
+            - "TZ=Asia/Tokyo"
+        volumes:
+            - $$PWD:/app
+
