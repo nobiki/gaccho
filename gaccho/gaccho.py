@@ -327,26 +327,6 @@ class Gaccho:
             self.position = len(self.tl)-1
             self.offset_y = len(self.tl)-1
 
-        ## tweet tw
-        elif self.key_pair == ord("t") and key == ord("w"):
-            self.key_trigger = "tweet"
-            self.key_pair = ""
-
-        ## re tweet tr
-        elif self.key_pair == ord("t") and key == ord("r"):
-            self.key_trigger = "retweet"
-            self.key_pair = ""
-
-        ## del tweet td
-        elif self.key_pair == ord("t") and key == ord("d"):
-            self.key_trigger = "del tweet"
-            self.key_pair = ""
-
-        ## fav tweet tf
-        elif self.key_pair == ord("t") and key == ord("f"):
-            self.key_trigger = "fav tweet"
-            self.key_pair = ""
-
         ## mark all ma
         elif self.key_pair == ord("m") and key == ord("a"):
             self.key_trigger = "mark all"
