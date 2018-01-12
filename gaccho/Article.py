@@ -9,6 +9,9 @@ class Article:
     def get(self):
         raise NotImplementedError
 
+    def controll(self, **keywords):
+        raise NotImplementedError
+
     def strip_tags(self, html):
         s = HTMLStripper()
         s.feed(html)
