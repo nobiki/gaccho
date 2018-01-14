@@ -247,11 +247,6 @@ class Gaccho:
     ## key operation
     def controll(self, key, win):
 
-        for p in self.plugins:
-            ret = p.controll(key_pair=self.key_pair, key=key)
-            self.key_trigger = ret["key_trigger"]
-            self.key_pair = ret["key_pair"]
-
         ## r
         if self.key_pair == "" and key == ord("r"):
             win.clear()
@@ -343,7 +338,18 @@ class Gaccho:
 
         ## input stack
         else:
-            if self.key_pair == "":
+            ret = {"key_trigger":"", "key_pair":""}
+            for p in self.plugins:
+                ret = p.controll(key_pair=self.key_pair, key_trigger=self.key_trigger, key=key)
+                if ret["key_trigger"] != "" or ret["key_pair"] != "":
+                    break
+
+            if self.key_pair == "" and ret["key_pair"] != "":
+                self.key_pair = ret["key_pair"]
+            elif self.key_pair != "" and ret["key_trigger"] != "":
+                self.key_trigger = ret["key_trigger"]
+                self.key_pair = ""
+            elif self.key_pair == "":
                 self.key_pair = key
             else:
                 self.key_trigger = "out of pair"
