@@ -250,7 +250,7 @@ class Gaccho:
         for p in self.plugins:
             ret = p.controll(key_pair=self.key_pair, key=key)
 
-            if "key_trigger" in self.key_trigger:
+            if "key_trigger" in ret:
                 self.key_trigger = ret["key_trigger"]
             self.key_pair = ret["key_pair"]
 
