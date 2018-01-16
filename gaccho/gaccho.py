@@ -248,7 +248,7 @@ class Gaccho:
     def controll(self, key, win):
 
         for p in self.plugins:
-            ret = p.controll(key_pair=self.key_pair, key=key)
+            ret = p.controll(key_trigger=self.key_trigger, key_pair=self.key_pair, key=key)
             self.key_trigger = ret["key_trigger"]
             self.key_pair = ret["key_pair"]
 
