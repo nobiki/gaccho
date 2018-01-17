@@ -19,8 +19,8 @@ import Article
 
 EDGE_TOP = 1
 EDGE_BOTTOM = 1
-EDGE_LEFT = 1
-EDGE_RIGHT = 1
+EDGE_LEFT = 2
+EDGE_RIGHT = 2
 EDGE_HEIGHT = EDGE_TOP + EDGE_BOTTOM
 EDGE_WIDTH = EDGE_LEFT + EDGE_RIGHT
 
@@ -145,8 +145,8 @@ class Gaccho:
                         category_color = curses.A_NORMAL
 
                     # render tl
-                    self.mainscr.addstr(EDGE_TOP+index,     1, self.truncate(category.ljust(CATEGORY_WIDTH), CATEGORY_WIDTH+EDGE_RIGHT, False), category_color)
-                    self.mainscr.addstr(EDGE_BOTTOM+index, CATEGORY_WIDTH+2, self.truncate(message, self.main_x-EDGE_WIDTH-CATEGORY_WIDTH-6), message_color)
+                    self.mainscr.addstr(EDGE_TOP+index,     1, self.truncate(category.ljust(CATEGORY_WIDTH), CATEGORY_WIDTH, False), category_color)
+                    self.mainscr.addstr(EDGE_BOTTOM+index, CATEGORY_WIDTH+1, self.truncate(message, self.main_x-EDGE_WIDTH-CATEGORY_WIDTH-EDGE_RIGHT-1), message_color)
 
             # input
             c = self.mainscr.getch()
@@ -167,11 +167,11 @@ class Gaccho:
         # timestamp, author
         height_timestamp = EDGE_TOP
 
-        self.subscr.addstr(height_timestamp, EDGE_LEFT, str("["+article[ARTICLE_TIMESTAMP]+"] author: "+article[ARTICLE_AUTHOR]))
+        self.subscr.addstr(height_timestamp, 1, str("["+article[ARTICLE_TIMESTAMP]+"] author: "+article[ARTICLE_AUTHOR]))
 
         # line
         line_height += 1
-        self.subscr.hline(height_timestamp+1, EDGE_LEFT, curses.ACS_HLINE, self.detail_x-EDGE_WIDTH)
+        self.subscr.hline(height_timestamp+1, 1, curses.ACS_HLINE, self.detail_x-EDGE_RIGHT)
 
         # category
         if article[ARTICLE_CATEGORY] in self.color.keys():
@@ -179,29 +179,29 @@ class Gaccho:
         else:
             category_color = curses.A_NORMAL
 
-        self.subscr.addstr(EDGE_TOP,self.detail_x-EDGE_RIGHT-self.strlen(str(article[ARTICLE_CATEGORY]))-3,"["+str(article[ARTICLE_CATEGORY])+"]",category_color)
+        self.subscr.addstr(EDGE_TOP,self.detail_x-1-self.strlen(str(article[ARTICLE_CATEGORY]))-3,"["+str(article[ARTICLE_CATEGORY])+"]",category_color)
 
         # title
         height_title = height_timestamp + line_height
         if article[ARTICLE_TITLE] != "":
-            article_title = self.carriage(article[ARTICLE_TITLE]+" ["+article[ARTICLE_FEEDTITLE]+"]", self.detail_x-EDGE_WIDTH-3)
+            article_title = self.carriage(article[ARTICLE_TITLE]+" ["+article[ARTICLE_FEEDTITLE]+"]", self.detail_x-EDGE_WIDTH-2)
             for line in article_title:
                 if height_title > 1:
-                    self.subscr.addstr(EDGE_TOP+height_title,EDGE_LEFT,article_title[line])
+                    self.subscr.addstr(EDGE_TOP+height_title,1,article_title[line])
                 else:
-                    self.subscr.addstr(EDGE_TOP+height_title,EDGE_LEFT,self.truncate(article_title[line], self.detail_x-EDGE_WIDTH-CATEGORY_WIDTH-EDGE_WIDTH-EDGE_RIGHT))
+                    self.subscr.addstr(EDGE_TOP+height_title,1,self.truncate(article_title[line], self.detail_x-EDGE_WIDTH-CATEGORY_WIDTH-1))
                 height_title += 1
 
         # url
         height_url   = height_title
         article_url = self.carriage(article[ARTICLE_URL], self.detail_x-EDGE_WIDTH-3)
         for line in article_url:
-            self.subscr.addstr(EDGE_TOP+height_url,EDGE_LEFT,article_url[line], curses.color_pair(self.color["url"]))
+            self.subscr.addstr(EDGE_TOP+height_url,1,article_url[line], curses.color_pair(self.color["url"]))
             height_url += 1
 
         # line
         line_height += 1
-        self.subscr.hline(height_url+1, EDGE_LEFT, curses.ACS_HLINE, self.detail_x-EDGE_WIDTH)
+        self.subscr.hline(height_url+1, 1, curses.ACS_HLINE, self.detail_x-EDGE_RIGHT)
 
         # body
         i = 0
@@ -210,13 +210,13 @@ class Gaccho:
         for line in message:
             inner = self.carriage(message[i], self.detail_x-EDGE_WIDTH-3)
             for line2 in inner:
-                self.subscr.addstr(j,EDGE_LEFT,inner[line2])
+                self.subscr.addstr(j,1,inner[line2])
                 j += 1
                 if i+j > self.detail_y-EDGE_BOTTOM:
                     break
             i += 1
             if i+j >  self.detail_y-EDGE_BOTTOM:
-                self.subscr.addstr(j,EDGE_LEFT,"...")
+                self.subscr.addstr(j,1,"...")
                 break
 
         while 1:
@@ -506,7 +506,7 @@ class Gaccho:
             else:
                 if length >= num_bytes:
                     if suffix == True:
-                        ret = ret + ".."
+                        ret = ret[:-2] + ".."
                 break
 
         return ret
