@@ -554,7 +554,10 @@ class Gaccho:
         text = tb.edit()
         text = text.replace(category+":", "")
 
-        self.plugins["Twitter"].tweet("_nobiki", "aaa")
+        for p in self.plugins:
+            category = p.__class__.__name__
+            if "_nobiki" == category:
+                p.tweet(category, text)
 
         sendscr.clear()
         sendscr.refresh()
