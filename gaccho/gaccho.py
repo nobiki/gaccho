@@ -544,14 +544,15 @@ class Gaccho:
         return ret
 
     def sender(self, category):
-        sendscr = curses.newwin(5, self.main_x-EDGE_WIDTH, 2, 2)
+        sendscr = curses.newwin(1, self.main_x-EDGE_WIDTH, self.main_y-1,0)
         self.setup(sendscr)
         sendscr.clear()
-        sendscr.box()
+        sendscr.addstr(0, 0, category+":")
         sendscr.refresh()
 
         tb = curses.textpad.Textbox(sendscr)
         text = tb.edit()
+        text = text.replace(category+":", "")
 
         sendscr.clear()
         sendscr.refresh()
