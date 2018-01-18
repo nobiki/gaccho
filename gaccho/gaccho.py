@@ -339,7 +339,7 @@ class Gaccho:
 
         ## tw
         elif self.key_pair == ord("t") and key == ord("w"):
-            sendmessage = self.sender("twitter")
+            sendmessage = self.sender("nobiki")
             self.key_trigger = sendmessage
             self.key_pair = ""
 
@@ -543,7 +543,7 @@ class Gaccho:
 
         return ret
 
-    def sender(self, category):
+    def sender(self, account):
         sendscr = curses.newwin(1, self.main_x-EDGE_WIDTH, self.main_y-1,0)
         self.setup(sendscr)
         sendscr.clear()
@@ -554,10 +554,14 @@ class Gaccho:
         text = tb.edit()
         text = text.replace(category+":", "")
 
-        for p in self.plugins:
-            category = p.__class__.__name__
-            if "nobiki" == category:
-                p.tweet(category, text)
+        for c in enumerate(self.config):
+            item = c[1]
+
+            if "type" in self.config[c[1]]:
+                ptype = self.config[c[1]]["type"]
+                if "Twitter" == ptype and account == item:
+                    p.tweet(account, text)
+                    break
 
         sendscr.clear()
         sendscr.refresh()
