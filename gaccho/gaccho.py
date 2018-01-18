@@ -556,7 +556,7 @@ class Gaccho:
 
         for p in self.plugins:
             category = p.__class__.__name__
-            if "_nobiki" == category:
+            if "nobiki" == category:
                 p.tweet(category, text)
 
         sendscr.clear()
