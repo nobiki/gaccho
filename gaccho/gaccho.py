@@ -547,25 +547,29 @@ class Gaccho:
         sendscr = curses.newwin(1, self.main_x-EDGE_WIDTH, self.main_y-1,0)
         self.setup(sendscr)
         sendscr.clear()
-        sendscr.addstr(0, 0, account+":")
+        sendscr.addstr(0, 0, account+":もげら")
         sendscr.refresh()
 
         # tb = curses.textpad.Textbox(sendscr)
         # text = tb.edit()
         # text = text.replace(account+":", "")
 
-        text = ""
+        text = []
         while True:
             key = sendscr.getch()  # 入力された文字の取得
             now_y, now_x = sendscr.getyx()  # 現在のカーソル位置
+
             # Ctrl+XかEnterで終了
             if key == curses.ascii.CAN or key == 10:
                 break
+
             elif key == 8:
                 if now_x > len(account+":"):
-                    sendscr.delch(now_y, now_x-1)
+                    text = text[:-1]
+
             # 他のキー、普通の文字等
             else:
+                text.append(key)
                 sendscr.addch(key)
 
         ppp = []
