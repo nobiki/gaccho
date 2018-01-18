@@ -12,9 +12,9 @@ import pkg_resources
 import importlib
 import configparser
 
-# import locale
+import locale
 import unicodedata
-# locale.setlocale(locale.LC_ALL, "")
+locale.setlocale(locale.LC_ALL, "")
 
 import Article
 
@@ -550,19 +550,33 @@ class Gaccho:
         sendscr.addstr(0, 0, account+":")
         sendscr.refresh()
 
-        tb = curses.textpad.Textbox(sendscr)
-        text = tb.edit()
-        text = text.replace(account+":", "")
+        # tb = curses.textpad.Textbox(sendscr)
+        # text = tb.edit()
+        # text = text.replace(account+":", "")
+
+        text = ""
+        while True:
+            key = sendscr.getch()  # 入力された文字の取得
+            now_y, now_x = sendscr.getyx()  # 現在のカーソル位置
+            # Ctrl+XかEnterで終了
+            if key == curses.ascii.CAN or key == 10:
+                break
+            elif key == 8:
+                if now_x > len(account+":"):
+                    sendscr.delch(now_y, now_x-1)
+            # 他のキー、普通の文字等
+            else:
+                sendscr.addch(key)
 
         ppp = []
-        for dist in pkg_resources.working_set:
-            if "gaccho-twitter" == dist.project_name:
-                ClassName = "Twitter"
-                module = importlib.import_module(dist.project_name.replace("-","_")+"."+ClassName)
-                Klass = getattr(module, ClassName)
-                ppp.append(Klass())
-                ppp[0].tweet(account, text)
-                break
+        # for dist in pkg_resources.working_set:
+        #     if "gaccho-twitter" == dist.project_name:
+        #         ClassName = "Twitter"
+        #         module = importlib.import_module(dist.project_name.replace("-","_")+"."+ClassName)
+        #         Klass = getattr(module, ClassName)
+        #         ppp.append(Klass())
+        #         ppp[0].tweet(account, text)
+        #         break
 
         sendscr.clear()
         sendscr.refresh()
