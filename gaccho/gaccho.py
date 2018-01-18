@@ -547,12 +547,12 @@ class Gaccho:
         sendscr = curses.newwin(1, self.main_x-EDGE_WIDTH, self.main_y-1,0)
         self.setup(sendscr)
         sendscr.clear()
-        sendscr.addstr(0, 0, category+":")
+        sendscr.addstr(0, 0, account+":")
         sendscr.refresh()
 
         tb = curses.textpad.Textbox(sendscr)
         text = tb.edit()
-        text = text.replace(category+":", "")
+        text = text.replace(account+":", "")
 
         for c in enumerate(self.config):
             item = c[1]
