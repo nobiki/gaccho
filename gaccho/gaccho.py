@@ -2,6 +2,7 @@
 # -*- coding:utf-8 -*-
 
 import curses
+import curses.textpad
 import os
 import time
 import datetime
@@ -155,23 +156,23 @@ class Gaccho:
             elif self.controll(c, self.mainscr) == False:
                 break
 
-    ## subscr: loop
+    ## detailscr: loop
     def detail(self, article):
-        self.subscr = curses.newwin(self.main_y-4, self.main_x-4, 2, 2)
-        self.subscr.clear()
-        self.setup(self.subscr)
-        self.detail_y, self.detail_x = self.subscr.getmaxyx()
+        self.detailscr = curses.newwin(self.main_y-4, self.main_x-4, 2, 2)
+        self.detailscr.clear()
+        self.setup(self.detailscr)
+        self.detail_y, self.detail_x = self.detailscr.getmaxyx()
 
         line_height = 0
 
         # timestamp, author
         height_timestamp = EDGE_TOP
 
-        self.subscr.addstr(height_timestamp, 1, str("["+article[ARTICLE_TIMESTAMP]+"] author: "+article[ARTICLE_AUTHOR]))
+        self.detailscr.addstr(height_timestamp, 1, str("["+article[ARTICLE_TIMESTAMP]+"] author: "+article[ARTICLE_AUTHOR]))
 
         # line
         line_height += 1
-        self.subscr.hline(height_timestamp+1, 1, curses.ACS_HLINE, self.detail_x-EDGE_RIGHT)
+        self.detailscr.hline(height_timestamp+1, 1, curses.ACS_HLINE, self.detail_x-EDGE_RIGHT)
 
         # category
         if article[ARTICLE_CATEGORY] in self.color.keys():
@@ -179,7 +180,7 @@ class Gaccho:
         else:
             category_color = curses.A_NORMAL
 
-        self.subscr.addstr(EDGE_TOP,self.detail_x-1-self.strlen(str(article[ARTICLE_CATEGORY]))-3,"["+str(article[ARTICLE_CATEGORY])+"]",category_color)
+        self.detailscr.addstr(EDGE_TOP,self.detail_x-1-self.strlen(str(article[ARTICLE_CATEGORY]))-3,"["+str(article[ARTICLE_CATEGORY])+"]",category_color)
 
         # title
         height_title = height_timestamp + line_height
@@ -187,21 +188,21 @@ class Gaccho:
             article_title = self.carriage(article[ARTICLE_TITLE]+" ["+article[ARTICLE_FEEDTITLE]+"]", self.detail_x-EDGE_WIDTH-2)
             for line in article_title:
                 if height_title > 1:
-                    self.subscr.addstr(EDGE_TOP+height_title,1,article_title[line])
+                    self.detailscr.addstr(EDGE_TOP+height_title,1,article_title[line])
                 else:
-                    self.subscr.addstr(EDGE_TOP+height_title,1,self.truncate(article_title[line], self.detail_x-EDGE_WIDTH-CATEGORY_WIDTH-1))
+                    self.detailscr.addstr(EDGE_TOP+height_title,1,self.truncate(article_title[line], self.detail_x-EDGE_WIDTH-CATEGORY_WIDTH-1))
                 height_title += 1
 
         # url
         height_url   = height_title
         article_url = self.carriage(article[ARTICLE_URL], self.detail_x-EDGE_WIDTH-3)
         for line in article_url:
-            self.subscr.addstr(EDGE_TOP+height_url,1,article_url[line], curses.color_pair(self.color["url"]))
+            self.detailscr.addstr(EDGE_TOP+height_url,1,article_url[line], curses.color_pair(self.color["url"]))
             height_url += 1
 
         # line
         line_height += 1
-        self.subscr.hline(height_url+1, 1, curses.ACS_HLINE, self.detail_x-EDGE_RIGHT)
+        self.detailscr.hline(height_url+1, 1, curses.ACS_HLINE, self.detail_x-EDGE_RIGHT)
 
         # body
         i = 0
@@ -210,32 +211,32 @@ class Gaccho:
         for line in message:
             inner = self.carriage(message[i], self.detail_x-EDGE_WIDTH-3)
             for line2 in inner:
-                self.subscr.addstr(j,1,inner[line2])
+                self.detailscr.addstr(j,1,inner[line2])
                 j += 1
                 if i+j > self.detail_y-EDGE_BOTTOM:
                     break
             i += 1
             if i+j >  self.detail_y-EDGE_BOTTOM:
-                self.subscr.addstr(j,1,"...")
+                self.detailscr.addstr(j,1,"...")
                 break
 
         while 1:
             self.focus = "detail"
 
             # input
-            c = self.subscr.getch()
+            c = self.detailscr.getch()
             if c == ord('q'):
-                self.subscr.clear()
-                self.subscr.refresh()
+                self.detailscr.clear()
+                self.detailscr.refresh()
                 break # Exit the while()
-            elif self.controll(c, self.subscr) == False:
+            elif self.controll(c, self.detailscr) == False:
                 break # Exit the while()
 
     ## screen setup
     def setup(self, win=False):
         try:
-            if win == self.subscr:
-                self.detail_y, self.detail_x = self.subscr.getmaxyx()
+            if win == self.detailscr:
+                self.detail_y, self.detail_x = self.detailscr.getmaxyx()
         except:
             win = self.mainscr
             self.main_y, self.main_x = self.mainscr.getmaxyx()
@@ -254,7 +255,7 @@ class Gaccho:
 
             if win == self.mainscr:
                 self.timeline(win, False)
-            elif win == self.subscr:
+            elif win == self.detailscr:
                 self.detail(self.tl[self.position])
                 return False
 
@@ -336,6 +337,12 @@ class Gaccho:
                 self.key_trigger = "mark one"
             self.key_pair = ""
 
+        ## tw
+        elif self.key_pair == ord("t") and key == ord("w"):
+            sendmessage = self.sender("twitter")
+            self.key_trigger = sendmessage
+            self.key_pair = ""
+
         ## input stack
         else:
             ret = {"key_trigger":"", "key_pair":""}
@@ -357,7 +364,7 @@ class Gaccho:
 
         if win == self.mainscr:
             pass
-        elif win == self.subscr:
+        elif win == self.detailscr:
             self.detail(self.tl[self.position])
             return False
 
@@ -536,7 +543,22 @@ class Gaccho:
 
         return ret
 
+    def sender(self, category):
+        sendscr = curses.newwin(5, self.main_x-EDGE_WIDTH, 2, 2)
+        self.setup(sendscr)
+        sendscr.clear()
+        sendscr.box()
+        sendscr.refresh()
 
+        tb = curses.textpad.Textbox(sendscr)
+        text = tb.edit()
+
+        sendscr.clear()
+        sendscr.refresh()
+
+        self.mainscr.refresh()
+
+        return text
 
 if __name__=='__main__':
     curses.wrapper(Gaccho)
