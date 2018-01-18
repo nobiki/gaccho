@@ -556,9 +556,8 @@ class Gaccho:
 
         ppp = []
         for dist in pkg_resources.working_set:
-            if re.compile("twitter$").search(dist.project_name):
-                tmp = dist.project_name.split("-")
-                ClassName = str(tmp[1][0].upper() + tmp[1][1:])
+            if "gaccho-twitter" == dist.project_name:
+                ClassName = "Twitter"
                 module = importlib.import_module(dist.project_name.replace("-","_")+"."+ClassName)
                 Klass = getattr(module, ClassName)
                 ppp.append(Klass())
