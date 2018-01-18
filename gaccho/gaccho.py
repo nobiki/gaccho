@@ -554,14 +554,14 @@ class Gaccho:
         text = tb.edit()
         text = text.replace(account+":", "")
 
-        for c in enumerate(self.config):
-            item = c[1]
-
-            if "type" in self.config[c[1]]:
-                ptype = self.config[c[1]]["type"]
-                if "Twitter" == ptype and account == item:
-                    p.tweet(account, text)
-                    break
+        for dist in pkg_resources.working_set:
+            if re.compile("twitter$").search(dist.project_name):
+                tmp = dist.project_name.split("-")
+                ClassName = str(tmp[1][0].upper() + tmp[1][1:])
+                module = importlib.import_module(dist.project_name.replace("-","_")+"."+ClassName)
+                Klass = getattr(module, ClassName)
+                Klass.tweet(account, text)
+                break
 
         sendscr.clear()
         sendscr.refresh()
