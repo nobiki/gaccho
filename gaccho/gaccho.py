@@ -338,10 +338,10 @@ class Gaccho:
             self.key_pair = ""
 
         ## tw
-        elif self.key_pair == ord("t") and key == ord("w"):
-            sendmessage = self.sender("nobiki")
-            self.key_trigger = sendmessage
-            self.key_pair = ""
+        # elif self.key_pair == ord("t") and key == ord("w"):
+        #     sendmessage = self.sender("nobiki")
+        #     self.key_trigger = sendmessage
+        #     self.key_pair = ""
 
         ## input stack
         else:
@@ -547,7 +547,7 @@ class Gaccho:
         sendscr = curses.newwin(1, self.main_x-EDGE_WIDTH, self.main_y-1,0)
         self.setup(sendscr)
         sendscr.clear()
-        sendscr.addstr(0, 0, account+":もげら")
+        sendscr.addstr(0, 0, account+":")
         sendscr.refresh()
 
         # tb = curses.textpad.Textbox(sendscr)
