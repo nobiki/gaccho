@@ -1,5 +1,6 @@
 setup:
 	apt-get install libncurses5 libncurses5-dev libncursesw5 libncursesw5-dev libreadline-dev pkg-config
+	pip install -r requirements.txt
 
 install:
 	pip install git+https://github.com/nobiki/gaccho_${PACKAGE}.git

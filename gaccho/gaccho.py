@@ -5,6 +5,7 @@ import curses
 import os
 import time
 import datetime
+import pytz
 import sys
 import re
 import pkg_resources
@@ -167,7 +168,11 @@ class Gaccho:
         # timestamp, author
         height_timestamp = EDGE_TOP
 
-        self.subscr.addstr(height_timestamp, 1, str("["+article[ARTICLE_TIMESTAMP]+"] author: "+article[ARTICLE_AUTHOR]))
+        tdatetime = datetime.datetime.strptime(article[ARTICLE_TIMESTAMP], '%Y-%m-%d %H:%M:%S')
+        _zone = pytz.timezone('Asia/Tokyo')
+        published = _zone.fromutc(tdatetime).strftime("%Y/%m/%d %H:%M:%S")
+
+        self.subscr.addstr(height_timestamp, 1, str("["+published+"] author: "+article[ARTICLE_AUTHOR]))
 
         # line
         line_height += 1
